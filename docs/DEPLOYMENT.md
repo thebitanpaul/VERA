@@ -178,11 +178,33 @@ Clicking the provider badge in the top bar opens **Model settings**:
 
 How the key is handled:
 
-- It is **never written to disk** on the server, never logged, and never
-  included in an API response.
+- It lives **only in that browser's `localStorage`** — the server never writes
+  it to disk, never logs it, and never includes it in an API response (checked
+  by `tests/test_credentials.py`).
 - It reaches the answer cache only as a **12-character SHA-256 prefix**, so two
   sessions with different keys cannot read each other's cached answers.
 - It travels in the request body over HTTPS. Render terminates TLS for you.
+- The server still sees the plaintext key **in memory, for the duration of that
+  one request** — that is unavoidable, since it is VERA who calls Gemini/OpenAI/
+  xAI/Anthropic on the visitor's behalf. Nothing about the request is persisted
+  after the response is sent.
+
+Because the key sits in `localStorage`, the main residual risk is **XSS**: any
+script an attacker got to run on the page could read it. Two things narrow that
+risk to "an attacker would need to find an actual injection bug":
+
+- Every server response carries a **strict, per-request-nonce Content-Security-
+  Policy** (`web/security.py`) — `script-src 'self' 'nonce-<random>'`, no
+  blanket `'unsafe-inline'`. A `<script>` tag smuggled in through any future bug
+  would be refused by the browser; only the one inline script VERA itself
+  renders (the theme-flash guard) carries the matching nonce.
+- All UI rendering escapes interpolated text before it reaches `innerHTML`
+  (`esc()` in `app.js`) and uses `addEventListener` exclusively — there are no
+  inline `onclick=` handlers for an injection to piggyback on.
+
+`X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`, and
+`X-Content-Type-Options: nosniff` are set on every response as further baseline
+hardening.
 
 To lock a deployment to its own server-side credentials and refuse
 browser-supplied keys entirely, set `VERA_ALLOW_CLIENT_KEYS=0`.
@@ -286,7 +308,7 @@ To use it on Render, change `runtime: python` to `runtime: docker` in
 ## Pre-deploy checklist
 
 ```bash
-pytest                                   # 128 tests, no network required
+pytest                                   # 135 tests, no network required
 python -m vera.ingest --check            # manifest builds, no warnings
 python -m vera "Is concomitant metformin permitted?" --trial 412 --no-escalate
 curl localhost:5000/healthz              # after: python -m web

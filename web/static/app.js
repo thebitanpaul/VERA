@@ -674,6 +674,54 @@ async function loadProviders() {
   refreshBackendBadge();
 }
 
+/* ------------------------------------------------------------ copyright bar */
+/* Fades in once the user has scrolled a little, so it never competes with the
+ * question box for attention on first paint. */
+function initCopyrightBar() {
+  const bar = el("copyright-bar");
+  const THRESHOLD = 120;
+  let ticking = false;
+  const update = () => {
+    const visible = window.scrollY > THRESHOLD;
+    bar.classList.toggle("is-visible", visible);
+    bar.setAttribute("aria-hidden", visible ? "false" : "true");
+    ticking = false;
+  };
+  window.addEventListener("scroll", () => {
+    if (!ticking) { requestAnimationFrame(update); ticking = true; }
+  }, { passive: true });
+  update();
+}
+
+/* --------------------------------------------------------- "add key" hint */
+const HINT_DISMISSED_KEY = "vera-key-hint-dismissed";
+
+/** A one-time pointer at the provider badge, so a first-time visitor discovers
+ * they can bring their own key. Never shown again once dismissed, or once a
+ * key has actually been saved. */
+function initModelKeyHint() {
+  const bubble = el("model-hint-bubble");
+  let dismissed = false;
+  try { dismissed = localStorage.getItem(HINT_DISMISSED_KEY) === "1"; }
+  catch (e) { /* private mode: just show it, no persistence possible */ }
+
+  if (dismissed || loadCreds().api_key) return;
+
+  const dismiss = () => {
+    bubble.hidden = true;
+    try { localStorage.setItem(HINT_DISMISSED_KEY, "1"); } catch (e) { /* ignore */ }
+  };
+
+  setTimeout(() => { bubble.hidden = false; }, 900);
+  el("model-hint-dismiss").addEventListener("click", (e) => {
+    e.stopPropagation();
+    dismiss();
+  });
+  el("backend-badge").addEventListener("click", dismiss, { once: true });
+  window.addEventListener("scroll", dismiss, { once: true, passive: true });
+  setTimeout(dismiss, 15000); // don't nag forever if ignored
+}
+
 function initSettings() {
   el("backend-badge").addEventListener("click", openSettings);
   el("settings-close").addEventListener("click", closeSettings);
@@ -695,6 +743,9 @@ function initSettings() {
     });
     refreshBackendBadge();
     closeSettings();
+    const bubble = el("model-hint-bubble");
+    if (bubble) bubble.hidden = true;
+    try { localStorage.setItem(HINT_DISMISSED_KEY, "1"); } catch (e) { /* ignore */ }
   });
 
   el("clear-key").addEventListener("click", () => {
@@ -772,6 +823,8 @@ function init() {
   });
 
   initSettings();
+  initCopyrightBar();
+  initModelKeyHint();
   // Providers first: the badge and the settings form both read from it.
   loadProviders().then(loadHealth);
   loadTrials();

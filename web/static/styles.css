@@ -126,12 +126,13 @@ a { color: var(--accent); }
   border-bottom: 1px solid var(--line);
 }
 
-.brand { display: flex; align-items: center; gap: 11px; margin-right: auto; min-width: 0; }
-/* The mark is a transparent PNG — no plate behind it, so it reads the same on
-   either theme. */
+.brand { display: flex; align-items: center; gap: 6px; margin-right: auto; min-width: 0; }
+/* The mark is a transparent PNG cropped tight to the glyph (no baked-in
+   whitespace) at its own aspect ratio, so a small flex gap is the only space
+   between it and the wordmark — nothing inside the image itself. */
 .brand .logo {
-  width: 34px; height: 34px; flex: none;
-  object-fit: contain; display: block;
+  height: 32px; width: auto; flex: none;
+  display: block;
 }
 .brand h1 { margin: 0; font-size: 16px; font-weight: 700; letter-spacing: .2px; }
 .brand .sub {
@@ -150,6 +151,34 @@ a { color: var(--accent); }
 /* --------------------------------------------------------- settings modal */
 .badge-btn { cursor: pointer; font: inherit; font-size: 12px; font-weight: 650; }
 .badge-btn:hover { border-color: var(--line-strong); }
+
+/* ------------------------------------------------------ "add your key" hint */
+.model-hint-anchor { position: relative; }
+.model-hint {
+  position: absolute; top: calc(100% + 10px); right: 0; z-index: 15;
+  display: flex; align-items: center; gap: 8px;
+  background: var(--ink); color: var(--bg);
+  border-radius: var(--radius-sm); padding: 9px 8px 9px 13px;
+  font-size: 12.5px; font-weight: 550; white-space: nowrap;
+  box-shadow: var(--shadow); animation: hint-in .25s ease-out;
+}
+:root[data-theme="dark"] .model-hint { background: var(--card); color: var(--ink); border: 1px solid var(--line-strong); }
+.model-hint::before {
+  content: ""; position: absolute; bottom: 100%; right: 14px;
+  border: 6px solid transparent; border-bottom-color: var(--ink);
+}
+:root[data-theme="dark"] .model-hint::before { border-bottom-color: var(--card); }
+.model-hint button {
+  border: none; background: transparent; color: inherit; opacity: .7;
+  cursor: pointer; font-size: 15px; line-height: 1; padding: 2px;
+}
+.model-hint button:hover { opacity: 1; }
+@keyframes hint-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .model-hint { animation: none; } }
+
+@media (max-width: 640px) {
+  .model-hint { right: -8px; max-width: 78vw; white-space: normal; }
+}
 
 .modal-backdrop {
   position: fixed; inset: 0; z-index: 40;
@@ -492,6 +521,20 @@ kbd {
   font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums;
 }
 .usage span b { color: var(--ink-2); font-weight: 650; }
+
+/* ------------------------------------------------------------ copyright bar */
+/* Hidden at rest so it never competes with the question box on first paint;
+   app.js reveals it once the user has scrolled a little. */
+.copyright-bar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 15;
+  text-align: center; font-size: 11.5px; color: var(--muted);
+  padding: 8px 16px; background: color-mix(in srgb, var(--card) 90%, transparent);
+  backdrop-filter: blur(8px); border-top: 1px solid var(--line);
+  opacity: 0; transform: translateY(100%); pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+}
+.copyright-bar.is-visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+@media (prefers-reduced-motion: reduce) { .copyright-bar { transition: opacity .25s ease; } }
 
 .sr-only {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;

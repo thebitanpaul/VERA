@@ -13,6 +13,66 @@ def test_index_renders():
     assert 'id="question"' in body
 
 
+def test_index_has_the_copyright_bar_and_key_hint(client):
+    body = client.get("/").get_data(as_text=True)
+    assert 'id="copyright-bar"' in body
+    assert "phiUture" in body
+    assert 'id="model-hint-bubble"' in body
+    assert 'id="model-hint-dismiss"' in body
+
+
+def test_index_favicons_present(client):
+    body = client.get("/").get_data(as_text=True)
+    for size in ("favicon-16.png", "favicon-32.png", "favicon-64.png",
+                "apple-touch-icon.png"):
+        assert size in body
+
+
+def test_favicon_files_are_served(client):
+    for name in ("favicon-16.png", "favicon-32.png", "favicon-64.png",
+                "apple-touch-icon.png", "logo.png"):
+        r = client.get(f"/static/{name}")
+        assert r.status_code == 200
+        assert r.data[:8] == b"\x89PNG\r\n\x1a\n"
+
+
+# ----------------------------------------------------------- security headers
+def test_security_headers_present(client):
+    r = client.get("/")
+    assert r.headers["X-Content-Type-Options"] == "nosniff"
+    assert r.headers["X-Frame-Options"] == "DENY"
+    assert r.headers["Referrer-Policy"] == "no-referrer"
+    assert "camera=()" in r.headers["Permissions-Policy"]
+
+    csp = r.headers["Content-Security-Policy"]
+    assert "default-src 'self'" in csp
+    assert "frame-ancestors 'none'" in csp
+    assert "object-src 'none'" in csp
+    # No blanket 'unsafe-inline' for scripts — only a per-request nonce.
+    assert "script-src 'self' 'nonce-" in csp
+    assert "script-src 'unsafe-inline'" not in csp
+
+
+def test_csp_nonce_matches_the_inline_script_tag(client):
+    r = client.get("/")
+    csp = r.headers["Content-Security-Policy"]
+    nonce = csp.split("'nonce-", 1)[1].split("'", 1)[0]
+    body = r.get_data(as_text=True)
+    assert f'nonce="{nonce}"' in body
+
+
+def test_csp_nonce_is_fresh_per_request(client):
+    n1 = client.get("/").headers["Content-Security-Policy"]
+    n2 = client.get("/").headers["Content-Security-Policy"]
+    assert n1 != n2
+
+
+def test_api_responses_also_carry_security_headers(client):
+    r = client.get("/healthz")
+    assert r.headers["X-Content-Type-Options"] == "nosniff"
+    assert "Content-Security-Policy" in r.headers
+
+
 def test_healthz(client):
     r = client.get("/healthz")
     assert r.status_code == 200

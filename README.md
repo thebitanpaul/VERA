@@ -71,7 +71,7 @@ python -m vera "<question>" --trial 412
 **Tests**
 
 ```bash
-pytest                            # 128 tests, no network, no key
+pytest                            # 135 tests, no network, no key
 ```
 
 ---
@@ -263,7 +263,7 @@ vera/                   core library
   cli.py                python -m vera
 web/                    Flask app factory, routes, templates, static
 data/protocols/         source documents
-tests/                  128 tests
+tests/                  135 tests
 docs/                   ARCHITECTURE.md, DEPLOYMENT.md
 wsgi.py                 gunicorn entry point
 render.yaml             Render blueprint

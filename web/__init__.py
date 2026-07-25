@@ -32,6 +32,10 @@ def create_app(config: dict | None = None) -> Flask:
 
     from .routes import bp
     app.register_blueprint(bp)
+
+    from .security import init_security
+    init_security(app)
+
     return app
 
 
