@@ -1,9 +1,45 @@
+<p align="center">
+  <img src="https://res.cloudinary.com/b0tb1mho/image/upload/v1784753097/aj9rycbehzhpwepoc3g0.png" width="90" alt="VERA Logo">
+</p>
+
+<p align="center">
+  <a href="https://vera.phiuture.com">
+    <img src="https://img.shields.io/badge/Live-Demo-2563EB?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Live Demo">
+  </a>
+</p>
+
 # VERA — Version-Explicit Retrieval & Answering
+
+
+## Problem Statement
+
+Clinical Research Organizations (CROs) manage dozens of clinical trials simultaneously. Each trial is governed by a **150–250 page protocol document** that defines patient eligibility, dosing schedules, washout periods, visit timelines, and safety procedures. These protocols are the single source of truth for how a trial must be conducted.
+
+Hospital site staff frequently need quick answers to protocol-specific questions such as:
+
+> - *What is the washout period for Cohort B?*
+> - *Is a patient taking metformin eligible?*
+> - *When should the follow-up visit occur after the last dose?*
+
+Today, these questions are typically answered by a central support team over email or phone, creating delays that do not scale across multiple concurrent trials.
+
+Building an intelligent protocol assistant is challenging because:
+
+- **Protocol Versioning** – Clinical protocols evolve over time. Version 3 may supersede or contradict Version 1, while all historical versions remain available for audit and reference.
+- **Patient Safety** – A confidently incorrect answer could lead to protocol deviations, incorrect dosing, or patient safety risks.
+
+**VERA (Version-Explicit Retrieval & Answering)** addresses these challenges by deterministically identifying the governing protocol version, retrieving evidence only from that version, verifying every generated response, and abstaining whenever sufficient evidence is unavailable.
+
+---
+
+## Solution
 
 VERA answers a trial coordinator's question about what a clinical-trial protocol
 **currently requires**, using only the version that governs the trial today —
 and it **abstains** rather than guessing when the protocol doesn't cover the
 question.
+
+<img src="https://res.cloudinary.com/b0tb1mho/image/upload/v1784995329/g8mytdgozkhwkvel5k4x.webp"/>
 
 Every answer cites **trial, version, section, and effective date**. When a rule
 changed across versions, VERA says so.
@@ -34,7 +70,47 @@ Tokens: 2474 total across 2 call(s) — in 1872, out 313, thinking 289 · 5675 m
 ```
 
 ---
+## Architecture
 
+```text
+┌───────────────────────────────────────────┐
+   Protocol PDFs ─▶  [1] INGESTION & TAGGING
+   (v1, v2, v3)        parse → chunk → attach metadata:
+                       {trial_id, version, effective_date,
+                        status, supersedes, section, cohort}
+                                    │
+                                    ▼
+                       [2] PROTOCOL REGISTRY (the data product)
+                       deterministic table: which version is
+                       CURRENT/EFFECTIVE per trial as of a date
+                                    │
+   Coordinator Q ─▶  [3] QUERY RESOLVER
+   "metformin ok      resolve trial_id (412) + as-of date
+    for 412?"         → registry says current = v3.0
+                                    │
+                                    ▼
+                       [4] HYBRID RETRIEVAL (BM25 + embeddings)
+                       pre-filtered to v3.0 by default;
+                       version history stays queryable
+                                    │
+                                    ▼
+                       [5] GROUNDED SYNTHESIS (LLM)
+                       answer ONLY from retrieved passages;
+                       MUST cite version + section + effective date
+                                    │
+                                    ▼
+                    ╔══════════════════════════════════════╗
+                    ║ [6] VERIFIER ← the agentic layer    ║
+                    ║ • every claim backed by a citation? ║
+                    ║ • versions conflict unresolved?     ║
+                    ║ • retrieval confidence < threshold? ║
+                    ╚══════════════════════════════════════╝
+                          │ pass                │ fail
+                          ▼                     ▼
+                 [7a] ANSWER            [7b] ABSTAIN
+                         │                     │
+                         └──────────► [8] ESCALATE
+```
 ## Quick start
 
 ```bash
@@ -204,6 +280,13 @@ JSON under `var/escalations/` in this demo. **It never escalates without being
 asked**, which is what stops abstention turning into ticket spam.
 
 ---
+## Demo
+
+<img src="https://res.cloudinary.com/b0tb1mho/image/upload/v1784995821/iqa3lcu9sd7kt8y5m4lq.webp"/>
+<img src="https://res.cloudinary.com/b0tb1mho/image/upload/v1784995822/ufe37mybok2flemob5dq.webp"/>
+
+
+---
 
 ## As a Claude Code Skill
 
@@ -269,13 +352,7 @@ wsgi.py                 gunicorn entry point
 render.yaml             Render blueprint
 ```
 
----
 
-## Deployment
-
-One Render web service — the Flask app serves both the API and the UI, so there
-is nothing to split across platforms. See
-[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ---
 
