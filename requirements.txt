@@ -1,0 +1,8 @@
+# Runtime dependencies. Bounded to compatible majors for reproducible deploys.
+flask>=3.0,<4.0
+gunicorn>=22.0,<24.0     # production WSGI server (Render start command)
+pypdf>=6.0,<7.0          # PDF protocol ingestion
+
+# Optional LLM providers.
+# Gemini needs no SDK — that backend uses urllib against the REST API.
+anthropic>=0.69          # imported only when the anthropic backend is selected

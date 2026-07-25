@@ -1,0 +1,239 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1620" font-family="'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif">
+  <defs>
+    <style>
+      .ink   { fill: #0F2438; }
+      .slate { fill: #5A6B7B; }
+      .title { font-weight: 700; fill: #0F2438; }
+      .sub   { fill: #5A6B7B; }
+      .mono  { font-family: ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace; }
+      .box   { fill: #FFFFFF; stroke: #C9D6E0; stroke-width: 1.6; }
+      .stagenum { font-family: ui-monospace, Menlo, monospace; font-weight: 700; fill: #FFFFFF; }
+      .conn  { stroke: #0F2438; stroke-width: 1.6; fill: none; }
+      .connt { stroke: #0E8C7F; stroke-width: 1.8; fill: none; }
+      .conna { stroke: #B26A22; stroke-width: 1.8; fill: none; }
+      .conni { stroke: #46579E; stroke-width: 1.8; fill: none; }
+    </style>
+    <marker id="ar" markerWidth="11" markerHeight="11" refX="8.5" refY="3.2" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L8.5,3.2 L0,6.4 Z" fill="#0F2438"/></marker>
+    <marker id="art" markerWidth="11" markerHeight="11" refX="8.5" refY="3.2" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L8.5,3.2 L0,6.4 Z" fill="#0E8C7F"/></marker>
+    <marker id="ara" markerWidth="11" markerHeight="11" refX="8.5" refY="3.2" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L8.5,3.2 L0,6.4 Z" fill="#B26A22"/></marker>
+    <marker id="ari" markerWidth="11" markerHeight="11" refX="8.5" refY="3.2" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L8.5,3.2 L0,6.4 Z" fill="#46579E"/></marker>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="1620" fill="#FBFCFD"/>
+
+  <!-- ================= HEADER ================= -->
+  <text x="64" y="78" class="ink" font-size="58" font-weight="800" letter-spacing="1">VERA</text>
+  <text x="230" y="58" class="ink" font-size="19" font-weight="600">Version-Explicit Retrieval &amp; Answering</text>
+  <text x="230" y="80" class="slate" font-size="14">for clinical-trial protocol Q&amp;A</text>
+  <text x="64" y="126" class="ink" font-size="16" font-style="italic">Trust is the product — answer only from the version that governs the trial today, or abstain.</text>
+
+  <g class="mono" font-size="11.5" fill="#33556A">
+    <rect x="880" y="36" width="256" height="26" rx="6" fill="#EEF3F7" stroke="#D6E0E8"/>
+    <text x="896" y="53">reference architecture</text>
+    <rect x="880" y="70" width="256" height="26" rx="6" fill="#EEF3F7" stroke="#D6E0E8"/>
+    <text x="896" y="87">safety-critical · regulated data</text>
+  </g>
+
+  <line x1="64" y1="150" x2="1136" y2="150" stroke="#C9D6E0" stroke-width="1.4"/>
+
+  <!-- ================= ENTRY POINTS ================= -->
+  <g>
+    <rect x="300" y="182" width="230" height="52" rx="10" fill="#FFFFFF" stroke="#C9D6E0" stroke-width="1.6"/>
+    <text x="415" y="206" text-anchor="middle" class="ink" font-size="13.5" font-weight="600">Coordinator → Claude Code</text>
+    <text x="415" y="224" text-anchor="middle" class="slate" font-size="12">Skill: <tspan class="mono" font-size="11.5">protocol-qa</tspan></text>
+
+    <rect x="550" y="182" width="230" height="52" rx="10" fill="#FFFFFF" stroke="#C9D6E0" stroke-width="1.6"/>
+    <text x="665" y="206" text-anchor="middle" class="ink" font-size="13.5" font-weight="600">Command line</text>
+    <text x="665" y="224" text-anchor="middle" class="mono slate" font-size="11">python vera.py "…" --trial N</text>
+
+    <path class="conn" d="M415,234 L415,262 L540,262 L540,288" marker-end="url(#ar)"/>
+    <path class="conn" d="M665,234 L665,262 L540,262" />
+  </g>
+
+  <!-- ================= AUDIT RAIL ================= -->
+  <line x1="262" y1="292" x2="262" y2="1094" stroke="#9FB3C2" stroke-width="1.3" stroke-dasharray="2 5"/>
+  <text transform="translate(252,700) rotate(-90)" text-anchor="middle" class="mono" font-size="11.5" fill="#7C8FA0" letter-spacing="1.5">AUDIT LOG · every step recorded</text>
+
+  <!-- ================= MAIN PIPELINE ================= -->
+  <!-- helper geometry: boxes x=300 w=480 (x2=780); badge cx=332 -->
+
+  <!-- [1] INGESTION -->
+  <rect class="box" x="300" y="290" width="480" height="112" rx="14"/>
+  <circle cx="332" cy="322" r="16" class="ink"/><text x="332" y="327" text-anchor="middle" class="stagenum" font-size="15">1</text>
+  <text x="362" y="318" class="title" font-size="17">Ingestion &amp; tagging</text>
+  <text x="362" y="340" class="sub" font-size="12.5">Parse and chunk protocol PDFs; attach structured metadata to every chunk.</text>
+  <rect x="362" y="352" width="392" height="36" rx="7" fill="#EEF3F7" stroke="#D6E0E8"/>
+  <text x="374" y="368" class="mono" font-size="10.5" fill="#33556A">{ trial_id, version, effective_date, status,</text>
+  <text x="374" y="382" class="mono" font-size="10.5" fill="#33556A">  supersedes, section, cohort }</text>
+  <path class="conn" d="M540,402 L540,430" marker-end="url(#ar)"/>
+
+  <!-- [2] REGISTRY -->
+  <rect class="box" x="300" y="432" width="480" height="110" rx="14"/>
+  <circle cx="332" cy="464" r="16" class="ink"/><text x="332" y="469" text-anchor="middle" class="stagenum" font-size="15">2</text>
+  <text x="362" y="460" class="title" font-size="17">Protocol registry <tspan class="slate" font-size="12" font-weight="400" font-style="italic">— the data product</tspan></text>
+  <text x="362" y="482" class="sub" font-size="12.5">Deterministic version resolution. <tspan fill="#0E8C7F" font-weight="600">Never</tspan> guessed by the LLM.</text>
+  <rect x="362" y="490" width="392" height="38" rx="7" fill="#EEF3F7" stroke="#D6E0E8"/>
+
+<text x="374" y="505" class="mono" font-size="10.2" fill="#33556A">
+  resolve_current_version(trial, as_of)
+</text>
+<text x="374" y="519" class="mono" font-size="10.2" fill="#33556A">
+  → latest active effective_date
+</text>
+  <path class="conn" d="M540,530 L540,558" marker-end="url(#ar)"/>
+
+  <!-- [3] QUERY RESOLVER -->
+  <rect class="box" x="300" y="560" width="480" height="92" rx="14"/>
+  <circle cx="332" cy="592" r="16" class="ink"/><text x="332" y="597" text-anchor="middle" class="stagenum" font-size="15">3</text>
+  <text x="362" y="588" class="title" font-size="17">Query resolver</text>
+  <text x="362" y="610" class="sub" font-size="12.5">Resolve trial and as-of date → the version that governs today.</text>
+  <text x="362" y="632" class="mono" font-size="10.5" fill="#7C8FA0">--as-of defaults to the current date</text>
+  <path class="conn" d="M540,652 L540,680" marker-end="url(#ar)"/>
+
+  <!-- [4] RETRIEVAL -->
+  <rect class="box" x="300" y="682" width="480" height="92" rx="14"/>
+  <circle cx="332" cy="714" r="16" class="ink"/><text x="332" y="719" text-anchor="middle" class="stagenum" font-size="15">4</text>
+  <text x="362" y="710" class="title" font-size="17">Hybrid retrieval</text>
+  <text x="362" y="732" class="sub" font-size="12.5">BM25 + embeddings, pre-filtered to the governing version.</text>
+  <text x="362" y="752" class="sub" font-size="12.5">Prior versions stay queryable — so a change can be disclosed.</text>
+  <path class="conn" d="M540,774 L540,802" marker-end="url(#ar)"/>
+
+  <!-- [5] SYNTHESIS -->
+  <rect class="box" x="300" y="804" width="480" height="102" rx="14"/>
+  <circle cx="332" cy="836" r="16" class="ink"/><text x="332" y="841" text-anchor="middle" class="stagenum" font-size="15">5</text>
+  <text x="362" y="832" class="title" font-size="17">Grounded synthesis</text>
+  <text x="362" y="854" class="sub" font-size="12.5">Answer only from retrieved passages. Must cite version, section, date.</text>
+  <rect x="362" y="868" width="392" height="26" rx="7" fill="#EEF3F7" stroke="#D6E0E8"/>
+  <text x="374" y="885" class="mono" font-size="10.5" fill="#33556A">backend: mock (default) · gemini · anthropic  — swappable</text>
+  <path class="conn" d="M540,906 L540,934" marker-end="url(#ar)"/>
+
+  <!-- [6] VERIFIER (trust gate — signature) -->
+  <rect x="300" y="936" width="480" height="150" rx="14" fill="#FFFFFF" stroke="#0E8C7F" stroke-width="2.2"/>
+  <circle cx="332" cy="968" r="16" fill="#0E8C7F"/><text x="332" y="973" text-anchor="middle" class="stagenum" font-size="15">6</text>
+  <text x="362" y="964" class="title" font-size="17">Verifier <tspan fill="#0E8C7F" font-size="12" font-weight="600">— the trust gate</tspan></text>
+  <text x="362" y="986" class="sub" font-size="12" font-weight="600">Deterministic gates run first:</text>
+  <g class="mono" font-size="10.5" fill="#33556A">
+    <text x="374" y="1004">• no governing version for the trial</text>
+    <text x="374" y="1020">• topic absent from the current version</text>
+    <text x="374" y="1036">• retrieval confidence below threshold</text>
+  </g>
+  <line x1="362" y1="1046" x2="754" y2="1046" stroke="#C9D6E0" stroke-width="1.2" stroke-dasharray="3 3"/>
+  <text x="362" y="1064" class="sub" font-size="12">then an <tspan fill="#0E8C7F" font-weight="600">adversarial</tspan> claim-grounding + citation audit (LLM).</text>
+  <text x="362" y="1080" class="mono" font-size="10.5" fill="#B26A22">any gate or audit fails → abstain</text>
+
+  <!-- FORK -->
+  <path class="connt" d="M540,1086 L540,1108 L400,1108 L400,1138" marker-end="url(#art)"/>
+  <path class="conna" d="M540,1108 L900,1108 L900,1138" marker-end="url(#ara)"/>
+  <text x="452" y="1102" class="ink" font-size="12" font-weight="700" fill="#0E8C7F">PASS</text>
+  <text x="712" y="1102" class="ink" font-size="12" font-weight="700" fill="#B26A22">FAIL → abstain</text>
+
+  <!-- [7a] ANSWER -->
+  <rect x="190" y="1140" width="420" height="118" rx="14" fill="#E7F4F1" stroke="#0E8C7F" stroke-width="1.8"/>
+  <text x="214" y="1168" class="title" font-size="16" fill="#0B4A43">7a · Answer + provenance</text>
+  <text x="214" y="1192" class="ink" font-size="13.5" font-weight="600">“Permitted, up to 2000 mg/day.”</text>
+  <text x="214" y="1214" class="mono" font-size="11" fill="#0B4A43">Trial 412 v3.0 §5.2 · effective 2025-03-01</text>
+  <text x="214" y="1234" class="ink" font-size="12">Change disclosed: v1.0 excluded metformin.</text>
+  <text x="214" y="1252" class="slate" font-size="11" font-style="italic">→ relayed to the coordinator, citation intact</text>
+
+  <!-- [7b] ABSTAIN -->
+  <rect x="690" y="1140" width="420" height="96" rx="14" fill="#FBF1E4" stroke="#B26A22" stroke-width="1.8"/>
+  <text x="714" y="1168" class="title" font-size="16" fill="#7A4713">7b · Abstain</text>
+  <text x="714" y="1192" class="mono" font-size="12" fill="#7A4713">INSUFFICIENT EVIDENCE — escalating</text>
+  <text x="714" y="1212" class="ink" font-size="12">Reason: topic not in the current protocol.</text>
+  <text x="714" y="1230" class="slate" font-size="11" font-style="italic">e.g. canagliflozin — absent from every version</text>
+
+  <path class="conna" d="M900,1236 L900,1262" marker-end="url(#ara)"/>
+
+  <!-- CONFIRM diamond -->
+  <polygon points="900,1262 1024,1322 900,1382 776,1322" fill="#FBF1E4" stroke="#B26A22" stroke-width="1.8"/>
+  <text x="900" y="1314" text-anchor="middle" class="ink" font-size="12.5" font-weight="600">Ask coordinator:</text>
+  <text x="900" y="1332" text-anchor="middle" class="ink" font-size="12.5" font-weight="600">escalate?</text>
+  <text x="900" y="1352" text-anchor="middle" class="slate" font-size="10.5" font-style="italic">no auto-filing</text>
+
+  <!-- NO branch -->
+  <path class="conna" d="M776,1322 L636,1322" marker-end="url(#ara)"/>
+  <rect x="446" y="1300" width="190" height="44" rx="10" fill="#FFFFFF" stroke="#C9D6E0" stroke-width="1.6"/>
+  <text x="541" y="1320" text-anchor="middle" class="ink" font-size="12.5" font-weight="600">Leave unanswered</text>
+  <text x="541" y="1336" text-anchor="middle" class="slate" font-size="11">no ticket filed</text>
+  <text x="700" y="1312" class="slate" font-size="11" font-weight="600" fill="#B26A22">No</text>
+
+  <!-- YES branch to escalate -->
+  <path class="conni" d="M900,1382 L900,1414" marker-end="url(#ari)"/>
+  <text x="912" y="1402" class="slate" font-size="11" font-weight="600" fill="#46579E">Yes</text>
+
+  <!-- [8] ESCALATE -->
+  <rect x="690" y="1416" width="420" height="132" rx="14" fill="#EDEFF8" stroke="#46579E" stroke-width="1.8" stroke-dasharray="7 4"/>
+  <circle cx="722" cy="1448" r="16" fill="#46579E"/><text x="722" y="1453" text-anchor="middle" class="stagenum" font-size="15">8</text>
+  <text x="752" y="1444" class="title" font-size="16" fill="#2E3C74">Escalate</text>
+  <text x="752" y="1462" class="slate" font-size="11.5"><tspan class="mono">EscalationSink</tspan> — swappable transport</text>
+  <rect x="710" y="1476" width="384" height="24" rx="7" fill="#FFFFFF" stroke="#C6CDEA"/>
+  <text x="722" y="1492" class="mono" font-size="10.5" fill="#2E3C74">prod · ADO MCP · wit_create_work_item</text>
+  <rect x="710" y="1504" width="384" height="24" rx="7" fill="#FFFFFF" stroke="#C6CDEA"/>
+  <text x="722" y="1520" class="mono" font-size="10.5" fill="#2E3C74">demo · JSON → escalations/</text>
+  <text x="710" y="1542" class="slate" font-size="10.5" font-style="italic">same payload; only the transport differs</text>
+
+  <!-- ================= WORKED-EXAMPLE SIDEBAR ================= -->
+  <rect x="812" y="290" width="344" height="796" rx="14" fill="#F4F8FA" stroke="#C9D6E0" stroke-width="1.4"/>
+  <text x="832" y="322" class="ink" font-size="14" font-weight="700">Worked example</text>
+  <text x="832" y="342" class="slate" font-size="12.5">the metformin question, end to end</text>
+  <line x1="832" y1="354" x2="1136" y2="354" stroke="#D3E0E8" stroke-width="1.2"/>
+
+  <g font-size="12">
+    <!-- e1 -->
+    <text x="832" y="382" class="ink" font-weight="600">Q</text>
+    <text x="852" y="382" class="ink">Is concomitant metformin permitted?</text>
+    <text x="852" y="400" class="mono slate" font-size="11">Trial 412 · as-of today</text>
+    <text x="984" y="418" text-anchor="middle" class="slate" font-size="13">▼</text>
+    <!-- e2 -->
+    <text x="832" y="440" class="ink" font-weight="600">Registry</text>
+    <text x="832" y="458" class="ink" font-size="11.5">governing = <tspan fill="#0E8C7F" font-weight="600">v3.0</tspan> (eff 2025-03-01)</text>
+    <text x="832" y="474" class="slate" font-size="11.5">v1.0, v2.0 → superseded</text>
+    <text x="984" y="492" text-anchor="middle" class="slate" font-size="13">▼</text>
+    <!-- e3 -->
+    <text x="832" y="514" class="ink" font-weight="600">Retrieve</text>
+    <text x="832" y="532" class="ink" font-size="11.5">v3.0 §5.2  (+ superseded v1.0 §5.2</text>
+    <text x="832" y="548" class="ink" font-size="11.5">for the change disclosure)</text>
+    <text x="984" y="566" text-anchor="middle" class="slate" font-size="13">▼</text>
+    <!-- e4 -->
+    <text x="832" y="588" class="ink" font-weight="600">Synthesise</text>
+    <text x="832" y="606" class="ink" font-size="11.5">from passages only:</text>
+    <text x="832" y="622" class="ink" font-size="11.5">“permitted, ≤ 2000 mg/day” + cite</text>
+    <text x="984" y="640" text-anchor="middle" class="slate" font-size="13">▼</text>
+    <!-- e5 -->
+    <text x="832" y="662" class="ink" font-weight="600">Verify</text>
+    <text x="832" y="680" class="ink" font-size="11.5">deterministic gates pass →</text>
+    <text x="832" y="696" class="ink" font-size="11.5">adversarial audit passes</text>
+    <text x="984" y="714" text-anchor="middle" class="slate" font-size="13">▼</text>
+  </g>
+
+  <!-- e6 answer card -->
+  <rect x="832" y="726" width="304" height="120" rx="12" fill="#E7F4F1" stroke="#0E8C7F" stroke-width="1.8"/>
+  <text x="850" y="752" class="ink" font-size="13" font-weight="700" fill="#0B4A43">Answer</text>
+  <text x="850" y="774" class="ink" font-size="12.5" font-weight="600">Permitted, up to 2000 mg/day.</text>
+  <text x="850" y="796" class="mono" font-size="10.5" fill="#0B4A43">Trial 412 v3.0 §5.2</text>
+  <text x="850" y="812" class="mono" font-size="10.5" fill="#0B4A43">effective 2025-03-01</text>
+  <text x="850" y="832" class="ink" font-size="11.5" font-style="italic">Note: v1.0 excluded it.</text>
+
+  <!-- ================= LEGEND ================= -->
+  <line x1="64" y1="1566" x2="1136" y2="1566" stroke="#C9D6E0" stroke-width="1.2"/>
+  <g font-size="12" class="slate">
+    <rect x="64" y="1582" width="22" height="14" rx="3" fill="#FFFFFF" stroke="#C9D6E0" stroke-width="1.6"/>
+    <text x="94" y="1593">Pipeline stage</text>
+
+    <rect x="216" y="1582" width="22" height="14" rx="3" fill="#E7F4F1" stroke="#0E8C7F" stroke-width="1.8"/>
+    <text x="246" y="1593">Verified answer path</text>
+
+    <rect x="404" y="1582" width="22" height="14" rx="3" fill="#FBF1E4" stroke="#B26A22" stroke-width="1.8"/>
+    <text x="434" y="1593">Abstain (a safe hold, not an error)</text>
+
+    <rect x="680" y="1582" width="22" height="14" rx="3" fill="#EDEFF8" stroke="#46579E" stroke-width="1.8" stroke-dasharray="4 3"/>
+    <text x="710" y="1593">External system boundary (MCP)</text>
+
+    <rect x="948" y="1582" width="22" height="14" rx="3" fill="#EEF3F7" stroke="#D6E0E8"/>
+    <text x="978" y="1593" class="mono" font-size="11">structured metadata</text>
+  </g>
+</svg>

@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vera"
+version = "1.0.0"
+description = "Version-Explicit Retrieval & Answering for clinical-trial protocols"
+classifiers = ["License :: Other/Proprietary License", "Private :: Do Not Upload"]
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [{ name = "Bitan Paul", email = "" }]
+dependencies = [
+    "flask>=3.0,<4.0",
+    "gunicorn>=22.0,<24.0",
+    "pypdf>=6.0,<7.0",
+]
+
+[project.optional-dependencies]
+anthropic = ["anthropic>=0.69"]
+embeddings = ["voyageai>=0.3"]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+vera = "vera.cli:main"
+
+[tool.setuptools]
+packages = ["vera", "vera.backends", "web"]
+
+[tool.setuptools.package-data]
+web = ["templates/*.html", "static/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+filterwarnings = ["error::DeprecationWarning:vera.*"]
+
+[tool.ruff]
+line-length = 92
+target-version = "py311"
+exclude = ["venv", "data", "var"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM"]
+ignore = ["E501"]

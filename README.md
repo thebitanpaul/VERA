@@ -1,0 +1,286 @@
+# VERA — Version-Explicit Retrieval & Answering
+
+VERA answers a trial coordinator's question about what a clinical-trial protocol
+**currently requires**, using only the version that governs the trial today —
+and it **abstains** rather than guessing when the protocol doesn't cover the
+question.
+
+Every answer cites **trial, version, section, and effective date**. When a rule
+changed across versions, VERA says so.
+
+```
+$ python -m vera "Is concomitant metformin permitted?" --trial 412 --no-escalate
+
+Trial 412: governing version v3.0 (effective 2025-03-01) as of 2026-07-25
+
+[backend: gemini · gemini-flash-latest]
+Yes, concomitant metformin is permitted under the current protocol, provided the
+total daily dose does not exceed 2000 mg/day and the patient has been on a stable
+dose for at least 14 days prior to the first dose of VRA-412
+(Trial 412 v3.0 §5.2, eff. 2025-03-01).
+
+**Change Disclosure:**
+Under Version 1.0 (eff. 2023-06-01) and Version 2.0 (eff. 2024-02-01), patients
+taking metformin at screening were excluded from enrollment.
+
+Provenance:
+  [current]    Trial 412 v3.0 §5.2 (Eligibility - Concomitant Metformin), effective 2025-03-01
+  [superseded] Trial 412 v1.0 §5.2 ...
+  [superseded] Trial 412 v2.0 §5.2 ...
+
+Verifier: PASSED — claims are grounded in the cited passages.
+
+Tokens: 2474 total across 2 call(s) — in 1872, out 313, thinking 289 · 5675 ms
+```
+
+---
+
+## Quick start
+
+```bash
+python -m venv venv
+venv\Scripts\activate            # Windows;  source venv/bin/activate elsewhere
+pip install -r requirements-dev.txt
+python -m vera.ingest --check    # build the protocol manifest (once)
+```
+
+No API key is needed: with none configured, VERA runs a deterministic mock
+backend that composes answers extractively from the retrieved passages.
+
+**Web UI**
+
+```bash
+python -m web                     # → http://127.0.0.1:5000
+```
+
+**CLI**
+
+```bash
+python -m vera "<question>" --trial 412
+```
+
+| Flag | Effect |
+|---|---|
+| `--as-of YYYY-MM-DD` | ask as of a past date |
+| `--backend auto\|mock\|gemini\|openai\|xai\|anthropic` | choose the synthesis backend |
+| `--escalate` / `--no-escalate` | skip the escalation prompt |
+| `--json` | emit the full structured result |
+| `--no-cache` | bypass the in-process answer cache |
+| `-v` | pipeline diagnostics on stderr |
+
+**Tests**
+
+```bash
+pytest                            # 128 tests, no network, no key
+```
+
+---
+
+## Using a real model
+
+Copy `.env.example` to `.env` and add a key:
+
+```dotenv
+GEMINI_API_KEY=your-key-here      # https://aistudio.google.com/apikey
+```
+
+> **Leave `GEMINI_MODEL` unset.** The default `gemini-flash-latest` is a rolling
+> alias to a served free-tier model. Pinning `gemini-2.0-flash`,
+> `gemini-2.5-flash`, or any `gemini-1.5-*` gives a free-tier quota of **0**, so
+> every call fails with a `429 … limit: 0` that reads like an exhausted key but
+> is really a retired model. VERA rejects those ids at startup and tells you so.
+
+Four providers are supported — set whichever key you have:
+
+| Provider | Env var | Notes |
+|---|---|---|
+| Google Gemini | `GEMINI_API_KEY` | free tier available |
+| OpenAI (GPT) | `OPENAI_API_KEY` | requires billing credit |
+| xAI (Grok) | `XAI_API_KEY` | requires credit |
+| Anthropic (Claude) | `ANTHROPIC_API_KEY` | requires credit |
+
+`--backend auto` picks the first configured provider in that order, else the mock.
+
+**Or set nothing and choose in the browser.** The web UI has a **Model settings**
+panel (click the provider badge in the top bar) where you pick a provider, paste
+a key, and optionally name a model. The key is stored in that browser only and
+sent with each question — so a deployed instance can switch provider or rotate a
+key **with no redeploy**. "Test key" verifies it by listing the provider's models,
+which costs no tokens.
+
+### Cost
+
+Two model calls per uncached question, **~2,500 tokens total** on the demo
+corpus. Every call carries an explicit output cap and an explicit thinking
+level, repeated questions are served from cache, and spend is reported in the
+CLI, the API response, and the UI. See
+[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md#cost-controls-in-production).
+
+---
+
+## Asking as of a past date
+
+A version governs **from its own effective date until the next version takes
+effect**. So `--as-of` reconstructs what a coordinator would have been told at
+the time:
+
+```bash
+python -m vera "Is concomitant metformin permitted?" --trial 412 --as-of 2023-07-01
+# -> governing version v1.0 ... metformin is EXCLUDED
+
+python -m vera "Is concomitant metformin permitted?" --trial 412
+# -> governing version v3.0 ... permitted up to 2000 mg/day
+```
+
+The result is flagged `historical` when the resolved version has since been
+superseded, and the UI shows a *"Historical view — this is not the current
+protocol"* banner so a past answer is never mistaken for current guidance.
+
+A date **before the trial's first version** is a different thing entirely — no
+protocol existed to govern, so there is nothing to answer from. That is reported
+as an input problem (`reason_kind: date_before_first_version`), not as a protocol
+gap, and the UI bounds its date picker to the trial's lifetime so it is hard to
+reach by accident.
+
+---
+
+## Two trials, one system
+
+The corpus holds two unrelated studies plus a real PDF protocol:
+
+| Trial | Drug / indication | Versions |
+|---|---|---|
+| **412** | VRA-412 | v1.0, v2.0, v3.0 |
+| **778** | NVK-778, plaque psoriasis | v1.0, v2.0 |
+| SNDX-275-0601 | entinostat (real PDF) | v6.0 |
+
+Both markdown trials have a **§5.2 Concomitant Metformin** and a **§6 Washout
+Period, Cohort B** — with different rules. Asking the same question of each
+proves retrieval never crosses trials:
+
+```bash
+python -m vera "Is concomitant metformin permitted?" --trial 412   # ≤ 2000 mg/day
+python -m vera "Is concomitant metformin permitted?" --trial 778   # no dose ceiling
+```
+
+---
+
+## Three example questions
+
+Trial **412** is the primary demo dataset.
+
+**1. Metformin — answered, with change disclosure**
+
+```bash
+python -m vera "Is concomitant metformin permitted?" --trial 412 --no-escalate
+```
+
+Permitted up to **2000 mg/day** per **v3.0 §5.2 (eff. 2025-03-01)**, and VERA
+discloses that **v1.0 and v2.0 excluded it**.
+
+**2. Cohort B washout — answered**
+
+```bash
+python -m vera "What is the washout period for Cohort B?" --trial 412 --no-escalate
+```
+
+A **14-day washout** before first dose, per **v3.0 §6**.
+
+**3. Canagliflozin — abstains**
+
+```bash
+python -m vera "Is canagliflozin allowed?" --trial 412 --no-escalate
+```
+
+```
+INSUFFICIENT EVIDENCE — escalating
+
+Reason: topic not present in any version of the protocol
+```
+
+VERA then asks whether to escalate. On confirmation it files a work item
+(question, trial, reason) — via the Azure DevOps MCP server in production, or as
+JSON under `var/escalations/` in this demo. **It never escalates without being
+asked**, which is what stops abstention turning into ticket spam.
+
+---
+
+## As a Claude Code Skill
+
+A non-technical coordinator can just ask in Claude Code. The `protocol-qa` skill
+(`.claude/skills/protocol-qa/SKILL.md`) runs VERA, relays the answer with its
+citations, and — if VERA abstains — asks whether to escalate before filing
+anything.
+
+---
+
+## How it works
+
+```
+Protocol docs ──▶ [1] INGESTION ──▶ [2] REGISTRY ──▶ [3] RETRIEVAL
+(md + pdf)          normalize          which version     current version only,
+                    into one           governs, as of    + superseded sections
+                    record schema      a date            on the same topic
+                                                                │
+                                              ┌─────────────────┘
+                                              ▼
+                          [4] SYNTHESIS ──▶ [5] VERIFIER ──▶ answer + provenance
+                          answer only        independent          or
+                          from passages      grounding audit  ABSTAIN ──▶ [6] ESCALATE
+```
+
+Steps [2] and the abstention gates are **deterministic** — the model never
+decides which version governs or whether the evidence is sufficient. Only the
+prose and the claim audit go through an LLM.
+
+VERA abstains when: no version of the trial had taken effect by the date asked
+about, the topic is absent from the governing version, retrieval confidence falls
+below threshold, or the verifier cannot ground a claim in a cited passage.
+
+**Retrieval confidence** ("term match" in the UI diagnostics) is the
+IDF-weighted share of the question's topic-bearing words that appear in the
+governing version. "Metformin" is rare and therefore heavily weighted; "dose" is
+boilerplate and weighted near zero. Below **34%** VERA abstains rather than
+answer on a weak lexical match — it is an abstention gate, not a confidence
+score for the answer's correctness.
+
+Full design notes in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+---
+
+## Layout
+
+```
+vera/                   core library
+  config.py             all tunables, env-overridable
+  registry.py           [2] deterministic version resolution
+  ingest.py             [1] markdown + PDF → one manifest schema
+  retrieval.py          [3] keyword (+ optional embedding) retrieval
+  prompts.py            shared prompts; passage truncation
+  backends/             mock | gemini | openai | xai | anthropic, one interface
+  pipeline.py           orchestration, gates, answer cache
+  escalation.py         [6] file sink / ADO MCP sink
+  cli.py                python -m vera
+web/                    Flask app factory, routes, templates, static
+data/protocols/         source documents
+tests/                  128 tests
+docs/                   ARCHITECTURE.md, DEPLOYMENT.md
+wsgi.py                 gunicorn entry point
+render.yaml             Render blueprint
+```
+
+---
+
+## Deployment
+
+One Render web service — the Flask app serves both the API and the UI, so there
+is nothing to split across platforms. See
+[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
+---
+
+<div align="center">
+
+**2026 · © phiUture · All Rights Reserved**
+
+</div>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="VERA — version-explicit protocol Q&amp;A for clinical-trial coordinators. Grounded, cited answers from the governing protocol version.">
+<title>VERA — Protocol Q&amp;A</title>
+<link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon-32.png') }}">
+<link rel="icon" type="image/png" sizes="64x64" href="{{ url_for('static', filename='favicon-64.png') }}">
+<link rel="apple-touch-icon" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+<script>
+  // Applied before first paint so the correct theme never flashes.
+  (function () {
+    try {
+      var saved = localStorage.getItem("vera-theme");
+      document.documentElement.dataset.theme = saved
+        || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    } catch (e) { document.documentElement.dataset.theme = "light"; }
+  })();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#question">Skip to the question box</a>
+
+<header class="topbar">
+  <div class="brand">
+    <img class="logo" src="{{ url_for('static', filename='logo.png') }}"
+         alt="phiUture" width="34" height="34">
+    <div>
+      <h1>VERA</h1>
+      <p class="sub">Version-Explicit Retrieval &amp; Answering · Clinical-Trial Protocols</p>
+    </div>
+  </div>
+  <button class="badge badge-muted badge-btn" id="backend-badge" type="button"
+          title="Active synthesis backend — click to change provider or key">
+    <span class="dot" style="background:var(--muted)"></span><span id="backend-name">checking…</span>
+  </button>
+  <button class="icon-btn" id="theme-toggle" type="button"
+          aria-label="Switch between light and dark theme">◐</button>
+</header>
+
+<!-- Model settings. Keys live in this browser only; the server never stores them. -->
+<div class="modal-backdrop" id="settings-backdrop" hidden></div>
+<div class="modal" id="settings" role="dialog" aria-modal="true"
+     aria-labelledby="settings-title" hidden>
+  <div class="modal-head">
+    <h2 id="settings-title">Model settings</h2>
+    <button class="icon-btn" id="settings-close" type="button" aria-label="Close">×</button>
+  </div>
+
+  <div class="modal-body">
+    <div class="field">
+      <label for="provider">Provider</label>
+      <select id="provider"></select>
+      <p class="hint" id="provider-hint" style="margin:6px 0 0"></p>
+    </div>
+
+    <div class="field" id="key-field">
+      <label for="api-key">API key</label>
+      <div class="key-row">
+        <input type="password" id="api-key" autocomplete="off" spellcheck="false"
+               placeholder="Paste your key">
+        <button class="icon-btn" id="key-reveal" type="button"
+                aria-label="Show or hide the key">👁</button>
+      </div>
+      <p class="hint" style="margin:6px 0 0">
+        Stored in <b>this browser only</b> (localStorage) and sent with each
+        question over HTTPS. VERA never writes it to disk or logs it.
+        <a id="key-link" href="#" target="_blank" rel="noopener">Get a key ↗</a>
+      </p>
+    </div>
+
+    <div class="field" id="model-field">
+      <label for="model">Model <span style="text-transform:none;font-weight:400">(optional)</span></label>
+      <input type="text" id="model" autocomplete="off" spellcheck="false">
+      <p class="hint" style="margin:6px 0 0" id="model-hint"></p>
+    </div>
+
+    <div id="settings-status"></div>
+  </div>
+
+  <div class="modal-foot">
+    <button class="btn btn-ghost" id="test-key" type="button">Test key</button>
+    <span style="flex:1"></span>
+    <button class="btn btn-ghost" id="clear-key" type="button">Clear</button>
+    <button class="btn btn-primary" id="save-settings" type="button">Save</button>
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <section class="panel" aria-labelledby="scope-title">
+      <h2 class="panel-title" id="scope-title">Scope</h2>
+      <div class="field">
+        <label for="trial">Trial</label>
+        <select id="trial"></select>
+      </div>
+      <div class="field">
+        <label for="as-of">As of date</label>
+        <input type="date" id="as-of">
+        <p class="hint" style="margin:6px 0 0" id="date-floor">
+          Which version governed on this date.</p>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="tl-title">
+      <h2 class="panel-title" id="tl-title">Version history</h2>
+      <div class="timeline" id="timeline" aria-live="polite"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="ex-title">
+      <h2 class="panel-title" id="ex-title">Try an example</h2>
+      <div class="chips">
+        <button class="chip" type="button" data-trial="412"
+          data-q="Is concomitant metformin permitted?">Metformin · Trial 412</button>
+        <button class="chip" type="button" data-trial="778"
+          data-q="Is concomitant metformin permitted?">Metformin · Trial 778</button>
+        <button class="chip" type="button" data-trial="412"
+          data-q="What is the washout period for Cohort B?">Cohort B washout</button>
+        <button class="chip" type="button" data-trial="778"
+          data-q="Are live vaccines allowed?">Live vaccines · 778</button>
+        <button class="chip" type="button" data-trial="412"
+          data-q="Is canagliflozin allowed?">Canagliflozin (not covered)</button>
+      </div>
+      <p class="hint" style="margin:11px 0 0">
+        The first two ask the <em>same question</em> of two trials — the answers differ,
+        because each is read only from its own protocol. The last isn't in any
+        protocol, so VERA abstains.</p>
+    </section>
+  </aside>
+
+  <main>
+    <section class="panel lg" aria-labelledby="ask-title">
+      <h2 class="panel-title" id="ask-title">Ask what the protocol currently requires</h2>
+      <div class="field">
+        <label for="question" class="sr-only">Your question</label>
+        <textarea id="question" rows="3" autofocus
+          placeholder="e.g. Is concomitant metformin permitted?"></textarea>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" id="ask" type="button">Ask VERA</button>
+        <span class="hint"><kbd>Ctrl</kbd>+<kbd>Enter</kbd> to submit</span>
+      </div>
+    </section>
+
+    <div id="result" role="region" aria-live="polite" aria-atomic="false"></div>
+
+    <footer class="foot">
+      Grounded answers only · deterministic version resolution · human-confirmed escalation.
+      <br>Answers come from the governing protocol version, never from the model's own knowledge.
+      <span class="k">v{{ version }}</span>
+    </footer>
+  </main>
+</div>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

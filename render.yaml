@@ -1,0 +1,60 @@
+# Render blueprint — one web service runs the whole application.
+#
+# VERA's Flask app serves both the API and the UI, so there is nothing to split
+# across two platforms. Deploy with: Render dashboard -> New -> Blueprint.
+#
+# Set GEMINI_API_KEY in the Render dashboard (it is marked sync:false below, so
+# it is never read from the repo).
+
+services:
+  - type: web
+    name: vera
+    runtime: python
+    plan: free
+    region: oregon
+    branch: main
+
+    # Build the protocol manifest at deploy time so the first request never
+    # pays to parse the PDF corpus.
+    buildCommand: "pip install -r requirements.txt && python -m vera.ingest --check"
+
+    # 2 workers x 4 threads: the workload is I/O-bound on the LLM call, and the
+    # free plan has limited memory. --timeout covers a slow model response.
+    startCommand: "gunicorn wsgi:app --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 120 --access-logfile - --error-logfile -"
+
+    healthCheckPath: /healthz
+    autoDeployTrigger: commit
+
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.6"
+      - key: VERA_BACKEND
+        value: auto
+      # Secrets — set these in the Render dashboard, not in the repo. All are
+      # optional: with none set the service runs the deterministic mock, and
+      # visitors can supply their own key from the UI's Model settings panel
+      # (which is what makes a provider switch need no redeploy).
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: XAI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      # Set to 0 to refuse browser-supplied keys and use only the above.
+      - key: VERA_ALLOW_CLIENT_KEYS
+        value: "1"
+      # Cost guardrails. See docs/ARCHITECTURE.md for why these exist.
+      - key: VERA_SYNTH_MAX_TOKENS
+        value: "2048"
+      - key: VERA_VERIFY_MAX_TOKENS
+        value: "1024"
+      - key: VERA_THINKING_LEVEL
+        value: low
+      - key: VERA_CACHE_SIZE
+        value: "256"
+      # Escalations land on the instance's ephemeral disk. Attach a Render disk
+      # (or swap in the ADO MCP sink) if they must survive a restart.
+      - key: VERA_ESCALATION_DIR
+        value: /tmp/vera-escalations
