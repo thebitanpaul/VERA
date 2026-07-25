@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="VERA — version-explicit protocol Q&amp;A for clinical-trial coordinators. Grounded, cited answers from the governing protocol version.">
 <title>VERA — Protocol Q&amp;A</title>
-<link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon-16.png') }}">
-<link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon-32.png') }}">
-<link rel="icon" type="image/png" sizes="64x64" href="{{ url_for('static', filename='favicon-64.png') }}">
-<link rel="apple-touch-icon" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+<link rel="icon" type="image/png" sizes="16x16" href="{{ static_url('favicon-16.png') }}">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ static_url('favicon-32.png') }}">
+<link rel="icon" type="image/png" sizes="64x64" href="{{ static_url('favicon-64.png') }}">
+<link rel="apple-touch-icon" href="{{ static_url('apple-touch-icon.png') }}">
+<link rel="stylesheet" href="{{ static_url('styles.css') }}">
 <script nonce="{{ csp_nonce }}">
   // Applied before first paint so the correct theme never flashes.
   (function () {
@@ -26,7 +26,7 @@
 
 <header class="topbar">
   <div class="brand">
-    <img class="logo" src="{{ url_for('static', filename='logo.png') }}"
+    <img class="logo" src="{{ static_url('logo.png') }}"
          alt="phiUture" width="82" height="96">
     <div>
       <h1>VERA</h1>
@@ -166,6 +166,6 @@
   2026 | © phiUture | All Rights Reserved
 </footer>
 
-<script src="{{ url_for('static', filename='app.js') }}"></script>
+<script src="{{ static_url('app.js') }}"></script>
 </body>
 </html>
