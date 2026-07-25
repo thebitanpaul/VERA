@@ -173,6 +173,10 @@ a { color: var(--accent); }
   cursor: pointer; font-size: 15px; line-height: 1; padding: 2px;
 }
 .model-hint button:hover { opacity: 1; }
+/* Without this, [hidden] and the .model-hint class have equal specificity, the
+   class comes later in the cascade, and its unconditional `display: flex` wins
+   — so bubble.hidden = true from app.js had no visible effect at all. */
+.model-hint[hidden] { display: none; }
 @keyframes hint-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 @media (prefers-reduced-motion: reduce) { .model-hint { animation: none; } }
 

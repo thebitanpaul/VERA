@@ -21,6 +21,19 @@ def test_index_has_the_copyright_bar_and_key_hint(client):
     assert 'id="model-hint-dismiss"' in body
 
 
+def test_model_hint_hidden_attribute_is_not_overridden_by_display_flex(client):
+    """Regression guard: `.model-hint { display: flex }` and the browser's own
+    `[hidden] { display: none }` have equal specificity, and author CSS wins
+    ties over the user-agent stylesheet. Without an explicit
+    `.model-hint[hidden] { display: none }` override, setting
+    `bubble.hidden = true` in app.js has no visible effect at all — confirmed
+    live in Chrome: the element stayed on screen (`display: flex`) after
+    dismissal. This only checks the override rule exists; it cannot evaluate
+    the CSS cascade itself."""
+    css = client.get("/static/styles.css").get_data(as_text=True)
+    assert ".model-hint[hidden]" in css
+
+
 def test_index_favicons_present(client):
     body = client.get("/").get_data(as_text=True)
     for size in ("favicon-16.png", "favicon-32.png", "favicon-64.png",

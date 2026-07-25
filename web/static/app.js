@@ -679,7 +679,12 @@ async function loadProviders() {
  * question box for attention on first paint. */
 function initCopyrightBar() {
   const bar = el("copyright-bar");
-  const THRESHOLD = 120;
+  // Deliberately small: on a typical laptop/desktop viewport (900px+ tall) the
+  // idle page has well under 120px of scroll room at all, which made the old
+  // threshold unreachable — the bar could never appear no matter how much the
+  // page was scrolled. A small threshold still keeps it off the very first
+  // paint while responding to any real scroll gesture.
+  const THRESHOLD = 16;
   let ticking = false;
   const update = () => {
     const visible = window.scrollY > THRESHOLD;
@@ -719,7 +724,7 @@ function initModelKeyHint() {
   });
   el("backend-badge").addEventListener("click", dismiss, { once: true });
   window.addEventListener("scroll", dismiss, { once: true, passive: true });
-  setTimeout(dismiss, 15000); // don't nag forever if ignored
+  setTimeout(dismiss, 10000); // don't nag forever if ignored
 }
 
 function initSettings() {
