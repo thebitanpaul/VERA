@@ -352,6 +352,13 @@ wsgi.py                 gunicorn entry point
 render.yaml             Render blueprint
 ```
 
+## License
+
+This project is licensed under the [phiUture Proprietary License](LICENSE).
+See the LICENSE file for full license text.
+
+
+
 ## About phiUture
 
 
