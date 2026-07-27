@@ -286,11 +286,9 @@ asked**, which is what stops abstention turning into ticket spam.
 <img src="https://res.cloudinary.com/b0tb1mho/image/upload/v1784995822/ufe37mybok2flemob5dq.webp"/>
 
 
-<p align="center">
-  <a href="https://youtu.be/S3u0ZHKb9Xo?si=VJvbp1eT3sgR_4F0">
-    <img src="https://img.shields.io/badge/▶-Watch_Demo-FF0000?style=for-the-badge&logo=youtube&logoColor=white">
-  </a>
-</p>
+<a href="https://youtu.be/S3u0ZHKb9Xo" target="_blank">
+<img src="https://img.youtube.com/vi/S3u0ZHKb9Xo/hqdefault.jpg" width="1080"/>
+</a>
 
 ---
 
