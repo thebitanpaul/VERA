@@ -76,9 +76,12 @@ def test_crawler_files_survive_a_sleeping_origin(client):
     must be cacheable long enough for the CDN to answer while the instance is
     idled out — hence stale-if-error, not just a max-age."""
     for path in ("/robots.txt", "/sitemap.xml"):
-        cache = client.get(path).headers["Cache-Control"]
+        r = client.get(path)
+        cache = r.headers["Cache-Control"]
         assert "max-age=86400" in cache
         assert "stale-if-error" in cache
+        # A shorter Expires alongside that Cache-Control reads as a conflict.
+        assert "Expires" not in r.headers
 
 
 def test_index_declares_an_https_canonical(client):

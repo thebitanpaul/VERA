@@ -103,6 +103,10 @@ def robots():
     resp = send_from_directory(current_app.static_folder, "robots.txt",
                                mimetype="text/plain")
     resp.headers["Cache-Control"] = CRAWLER_CACHE_CONTROL
+    # send_from_directory adds its own Expires from SEND_FILE_MAX_AGE_DEFAULT,
+    # which would contradict the Cache-Control above. Caches prefer
+    # Cache-Control, so this only removes a misleading header.
+    resp.headers.pop("Expires", None)
     return resp
 
 
