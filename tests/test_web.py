@@ -49,6 +49,43 @@ def test_favicon_files_are_served(client):
         assert r.data[:8] == b"\x89PNG\r\n\x1a\n"
 
 
+# ------------------------------------------------------------------- crawlers
+def test_robots_txt_allows_crawling_and_lists_this_hosts_sitemap(client):
+    r = client.get("/robots.txt")
+    assert r.status_code == 200
+    assert r.mimetype == "text/plain"
+    body = r.get_data(as_text=True)
+    assert "User-agent: *" in body
+    assert "Allow: /" in body
+    # Nothing may disallow the one page Google is asked to index.
+    assert "Disallow: /\n" not in body
+    assert "Sitemap: https://vera.phiuture.com/sitemap.xml" in body
+
+
+def test_sitemap_lists_the_page_with_an_https_absolute_url(client):
+    r = client.get("/sitemap.xml")
+    assert r.status_code == 200
+    assert r.mimetype == "application/xml"
+    body = r.get_data(as_text=True)
+    assert "<loc>https://vera.phiuture.com/</loc>" in body
+    assert "<lastmod>" in body
+
+
+def test_crawler_files_survive_a_sleeping_origin(client):
+    """Google reads an unreachable robots.txt as a full disallow, so both files
+    must be cacheable long enough for the CDN to answer while the instance is
+    idled out — hence stale-if-error, not just a max-age."""
+    for path in ("/robots.txt", "/sitemap.xml"):
+        cache = client.get(path).headers["Cache-Control"]
+        assert "max-age=86400" in cache
+        assert "stale-if-error" in cache
+
+
+def test_index_declares_an_https_canonical(client):
+    body = client.get("/").get_data(as_text=True)
+    assert '<link rel="canonical" href="https://vera.phiuture.com/">' in body
+
+
 # ----------------------------------------------------------- security headers
 def test_security_headers_present(client):
     r = client.get("/")

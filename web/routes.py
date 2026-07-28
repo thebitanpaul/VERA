@@ -8,9 +8,11 @@ from __future__ import annotations
 
 import datetime as _dt
 import logging
+import os
 
 from flask import (
     Blueprint,
+    Response,
     current_app,
     jsonify,
     render_template,
@@ -37,6 +39,22 @@ bp = Blueprint("vera_web", __name__)
 
 MAX_QUESTION_CHARS = 2000
 MAX_KEY_CHARS = 512
+
+# The public origin, used for the canonical link and the sitemap's <loc>. Both
+# have to be absolute, and the app cannot infer the scheme reliably: Render
+# terminates TLS at its edge, so gunicorn sees plain http and
+# ``request.url_root`` would advertise ``http://`` to crawlers.
+PUBLIC_BASE_URL = os.environ.get(
+    "VERA_PUBLIC_BASE_URL", "https://vera.phiuture.com").rstrip("/")
+
+# robots.txt and sitemap.xml are the two files a crawler fetches *before* it is
+# willing to crawl anything, and Google reads an unreachable robots.txt as
+# "disallow everything" — not as "no restrictions". This service runs on a plan
+# that idles the instance out, so a cold start can outlast a crawler's patience.
+# A long TTL plus ``stale-if-error`` lets the CDN keep answering these two
+# requests from cache while the origin is asleep, waking, or failing.
+CRAWLER_CACHE_CONTROL = ("public, max-age=86400, s-maxage=86400, "
+                         "stale-while-revalidate=86400, stale-if-error=604800")
 
 
 def _bad_request(message: str):
@@ -74,16 +92,49 @@ def _client_credentials(data: dict) -> tuple[Credentials | None, str | None]:
 
 @bp.get("/")
 def index():
-    return render_template("index.html", version=__version__)
+    return render_template("index.html", version=__version__,
+                           canonical_url=f"{PUBLIC_BASE_URL}/")
 
 
 @bp.get("/robots.txt")
 def robots():
     """Crawler directives. Must live at the domain root, so it cannot just be a
-    file under ``/static`` — it points crawlers at the sitemap on the parent
-    site, which is what lists this subdomain."""
-    return send_from_directory(current_app.static_folder, "robots.txt",
+    file under ``/static``."""
+    resp = send_from_directory(current_app.static_folder, "robots.txt",
                                mimetype="text/plain")
+    resp.headers["Cache-Control"] = CRAWLER_CACHE_CONTROL
+    return resp
+
+
+@bp.get("/sitemap.xml")
+def sitemap():
+    """This host's own sitemap.
+
+    The parent site's sitemap also lists this subdomain, but a cross-host entry
+    is only honoured when both hosts are verified in the same Search Console
+    account. Serving a same-host sitemap removes that dependency: the one URL
+    here is the whole site — the UI is a single page and everything else under
+    ``/api/`` is a JSON surface, not a document.
+    """
+    try:
+        mtime = os.path.getmtime(
+            os.path.join(current_app.root_path, "templates", "index.html"))
+        lastmod = _dt.date.fromtimestamp(mtime).isoformat()
+    except OSError:
+        lastmod = _dt.date.today().isoformat()
+
+    body = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+            '  <url>\n'
+            f'    <loc>{PUBLIC_BASE_URL}/</loc>\n'
+            f'    <lastmod>{lastmod}</lastmod>\n'
+            '    <changefreq>weekly</changefreq>\n'
+            '    <priority>0.8</priority>\n'
+            '  </url>\n'
+            '</urlset>\n')
+    resp = Response(body, mimetype="application/xml")
+    resp.headers["Cache-Control"] = CRAWLER_CACHE_CONTROL
+    return resp
 
 
 @bp.get("/healthz")

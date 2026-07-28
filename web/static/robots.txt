@@ -5,4 +5,7 @@ Allow: /
 Disallow: /api/
 Disallow: /healthz
 
+# This host's own sitemap first; the parent site's sitemap lists this subdomain
+# too, but a cross-host entry only counts when both hosts are verified together.
+Sitemap: https://vera.phiuture.com/sitemap.xml
 Sitemap: https://phiuture.com/sitemap.xml
