@@ -9,7 +9,14 @@ from __future__ import annotations
 import datetime as _dt
 import logging
 
-from flask import Blueprint, current_app, jsonify, render_template, request
+from flask import (
+    Blueprint,
+    current_app,
+    jsonify,
+    render_template,
+    request,
+    send_from_directory,
+)
 
 from vera import __version__
 from vera.backends import (
@@ -68,6 +75,15 @@ def _client_credentials(data: dict) -> tuple[Credentials | None, str | None]:
 @bp.get("/")
 def index():
     return render_template("index.html", version=__version__)
+
+
+@bp.get("/robots.txt")
+def robots():
+    """Crawler directives. Must live at the domain root, so it cannot just be a
+    file under ``/static`` — it points crawlers at the sitemap on the parent
+    site, which is what lists this subdomain."""
+    return send_from_directory(current_app.static_folder, "robots.txt",
+                               mimetype="text/plain")
 
 
 @bp.get("/healthz")

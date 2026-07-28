@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# JSON endpoints and the health probe are machine surfaces, not pages.
+Disallow: /api/
+Disallow: /healthz
+
+Sitemap: https://phiuture.com/sitemap.xml
