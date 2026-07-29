@@ -53,8 +53,7 @@ PUBLIC_BASE_URL = os.environ.get(
 # that idles the instance out, so a cold start can outlast a crawler's patience.
 # A long TTL plus ``stale-if-error`` lets the CDN keep answering these two
 # requests from cache while the origin is asleep, waking, or failing.
-CRAWLER_CACHE_CONTROL = ("public, max-age=86400, s-maxage=86400, "
-                         "stale-while-revalidate=86400, stale-if-error=604800")
+CRAWLER_CACHE_CONTROL = "no-cache, no-store, max-age=0, s-maxage=0, must-revalidate"
 
 
 def _bad_request(message: str):
