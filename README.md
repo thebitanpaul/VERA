@@ -2,11 +2,13 @@
   <img src="https://res.cloudinary.com/b0tb1mho/image/upload/v1784753097/aj9rycbehzhpwepoc3g0.png" width="90" alt="VERA Logo">
 </p>
 
-<p align="center">
-  <a href="https://vera.phiuture.com">
-    <img src="https://img.shields.io/badge/Live-Demo-2563EB?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Live Demo">
-  </a>
-</p>
+
+<div align="center">
+
+[![Live Demo](https://img.shields.io/badge/Open%20on-phiUture-000000?style=for-the-badge)](https://vera.phiuture.com)
+
+</div>
+
 
 # VERA — Version-Explicit Retrieval & Answering
 
