@@ -32,7 +32,7 @@ serves — a second platform buys nothing.
 ### Step 1 — Push to GitHub
 
 ```bash
-cd C:\Users\BitanPaul\Documents\VERA
+cd VERA                                  # the project root
 git init
 git add .
 git commit -m "VERA 1.0"
@@ -246,7 +246,7 @@ To use it on Render, change `runtime: python` to `runtime: docker` in
 ## Pre-deploy checklist
 
 ```bash
-pytest                                   # 135 tests, no network required
+pytest                                   # 140 tests, no network required
 python -m vera.ingest --check            # manifest builds, no warnings
 python -m vera "Is concomitant metformin permitted?" --trial 412 --no-escalate
 curl localhost:5000/healthz              # after: python -m web

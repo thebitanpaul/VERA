@@ -149,7 +149,7 @@ python -m vera "<question>" --trial 412
 **Tests**
 
 ```bash
-pytest                            # 135 tests, no network, no key
+pytest                            # 140 tests, no network, no key
 ```
 
 ---
@@ -177,7 +177,7 @@ Four providers are supported — set whichever key you have:
 | xAI (Grok) | `XAI_API_KEY` | requires credit |
 | Anthropic (Claude) | `ANTHROPIC_API_KEY` | requires credit |
 
-`--backend auto` picks the first configured provider in that order, else the mock.
+`--backend auto` picks the first configured provider in the order Gemini → Anthropic → OpenAI → xAI, else the mock.
 
 **Or set nothing and choose in the browser.** The web UI has a **Model settings**
 panel (click the provider badge in the top bar) where you pick a provider, paste
@@ -352,8 +352,8 @@ vera/                   core library
   cli.py                python -m vera
 web/                    Flask app factory, routes, templates, static
 data/protocols/         source documents
-tests/                  135 tests
-docs/                   ARCHITECTURE.md, DEPLOYMENT.md
+tests/                  140 tests
+docs/                   ARCHITECTURE, DEPLOYMENT, DEVELOPMENT, PROJECT_CONTEXT, STATUS
 wsgi.py                 gunicorn entry point
 render.yaml             Render blueprint
 ```
