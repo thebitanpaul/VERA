@@ -115,7 +115,7 @@ version").
 
 ## Branding / ownership
 
-phiUture (proprietary license). Public site `https://vera.phiuture.com`
+phiUture Tech (proprietary license). Public site `https://vera.phiuture.com`
 (override with `VERA_PUBLIC_BASE_URL`). UI footer: "2026 | © phiUture | All
 Rights Reserved". Open Graph/Twitter preview image is hosted on Cloudinary and
 served as JPEG because LinkedIn's crawler would not render the WebP.

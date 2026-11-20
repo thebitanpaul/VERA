@@ -1,13 +1,13 @@
 VERA — Version-Explicit Retrieval & Answering
 
-Copyright (c) 2026 Bitan Paul, phiUture
+Copyright (c) 2026 Bitan Paul, phiUture Tech
 All rights reserved.
 
 PROPRIETARY AND CONFIDENTIAL
 
 This software and its accompanying documentation, source code, data files, and
 design materials (collectively, the "Software") are the proprietary and
-confidential property of Bitan Paul, phiUture (the "Owner").
+confidential property of Bitan Paul, phiUture Tech (the "Owner").
 
 No part of the Software may be reproduced, copied, modified, adapted, merged,
 published, distributed, sublicensed, sold, transmitted, publicly displayed,
@@ -20,7 +20,17 @@ the Software. No licence is granted by implication, estoppel, or otherwise. Any
 use not expressly permitted in writing by the Owner is prohibited and may
 violate applicable copyright and other laws.
 
-Requests for permission should be directed to the Owner.
+OFFICIAL RELEASES
+
+Where the Owner publishes the Software for public use — as an official download,
+an app-store listing, or a hosted version — you may install and use that
+official release for its intended purpose, on the terms under which the Owner
+offers it. This permission covers only official releases obtained through the
+Owner's own channels. It grants no rights in the source code in this repository,
+and the Owner may withdraw it at any time.
+
+Requests for permission should be directed to the Owner at
+thephiuture@gmail.com.
 
 THIRD-PARTY COMPONENTS
 

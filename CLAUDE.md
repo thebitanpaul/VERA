@@ -4,7 +4,7 @@ VERA (Version-Explicit Retrieval & Answering) answers a clinical-trial
 coordinator's question about what a protocol **currently** requires, using only
 the protocol version that governs the trial on a given date, always cited
 (trial, version, section, effective date), and **abstains rather than guessing**.
-Live at https://vera.phiuture.com (Render). Proprietary (phiUture) — see LICENSE.
+Live at https://vera.phiuture.com (Render). Proprietary (phiUture Tech) — see LICENSE.
 
 Detailed context lives in `docs/` — read the relevant file before non-trivial work:
 

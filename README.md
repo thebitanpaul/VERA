@@ -388,10 +388,14 @@ render.yaml             Render blueprint
 
 ## License
 
-**Proprietary.** Copyright © 2026 Bitan Paul, phiUture. All Rights Reserved.
+**Proprietary — Copyright © 2026 Bitan Paul, phiUture Tech. All Rights Reserved.**
 
-No part of VERA may be used, copied, modified or distributed without prior written
-permission — see [`LICENSE`](LICENSE).
+VERA is proprietary software owned by phiUture Tech. Its source code is published here to be
+read, not reused: no part of it may be copied, modified, distributed or used to create derivative
+work without prior written permission. The official hosted app at [vera.phiuture.com](https://vera.phiuture.com) may be used as offered.
+
+See [`LICENSE`](LICENSE) for the full terms, and write to
+[thephiuture@gmail.com](mailto:thephiuture@gmail.com) for permissions.
 
 ---
 
@@ -441,6 +445,6 @@ Technology Follows.* — makes original music and film.
 
 **phiUture Tech** · *Thoughtfully Engineered. Crafted for You.*
 
-<sub>© 2026 phiUture · All Rights Reserved</sub>
+<sub>© 2026 phiUture Tech · All Rights Reserved</sub>
 
 </div>
