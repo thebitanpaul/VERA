@@ -1,19 +1,45 @@
-<p align="center">
-  <img src="https://res.cloudinary.com/b0tb1mho/image/upload/v1784753097/aj9rycbehzhpwepoc3g0.png" width="90" alt="VERA Logo">
-</p>
-
-
 <div align="center">
 
-[![Live Demo](https://img.shields.io/badge/Open%20on-phiUture-000000?style=for-the-badge)](https://vera.phiuture.com)
+<a href="https://phiuture.com/tech">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://res.cloudinary.com/b0tb1mho/image/upload/v1794310202/ymqwl9jz0hpsmdoegmwx.png" />
+    <img src="https://res.cloudinary.com/b0tb1mho/image/upload/b_black,r_24/v1794310202/ymqwl9jz0hpsmdoegmwx.png" alt="phiUture Tech" width="220" />
+  </picture>
+</a>
+
+<em>Thoughtfully Engineered. Crafted for You.</em>
+
+<br/><br/>
+
+<img src="https://res.cloudinary.com/b0tb1mho/image/upload/v1784995316/whxgcxymdcngjjk4x6ir.webp" alt="VERA icon" width="96" />
+
+# VERA
+
+### *Version-aware clinical protocol intelligence you can trust.*
+
+[![Launch the app](https://img.shields.io/badge/Launch-the_app-7C3AED?style=for-the-badge&logo=googlechrome&logoColor=white)](https://vera.phiuture.com)
+[![Watch the demo](https://img.shields.io/badge/Watch-the_demo-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/S3u0ZHKb9Xo?si=UdbKo0zIZVEs7msf)
+[![Open on phiUture](https://img.shields.io/badge/Open_on-phiUture-000000?style=for-the-badge)](https://phiuture.com/tech/VERA)
+
+![status Live](https://img.shields.io/badge/status-Live-2EA043?style=flat-square)
+[![license Proprietary](https://img.shields.io/badge/license-Proprietary-555555?style=flat-square)](LICENSE)
+![launched 2026](https://img.shields.io/badge/launched-2026-7C3AED?style=flat-square)
+
+<br/>
+
+<img src="https://res.cloudinary.com/b0tb1mho/image/upload/v1784995329/g8mytdgozkhwkvel5k4x.webp" alt="VERA — a phiUture Tech product" width="100%" />
 
 </div>
 
+---
 
-# VERA — Version-Explicit Retrieval & Answering
+## Overview
 
+VERA (Version-Explicit Retrieval & Answering) is an AI-powered clinical protocol assistant that answers trial-specific questions using only the governing protocol version. It combines deterministic version resolution, hybrid retrieval, grounded LLM generation, and automated verification to deliver auditable answers with complete provenance while abstaining whenever evidence is insufficient.
 
-## Problem Statement
+---
+
+## Problem
 
 Clinical Research Organizations (CROs) manage dozens of clinical trials simultaneously. Each trial is governed by a **150–250 page protocol document** that defines patient eligibility, dosing schedules, washout periods, visit timelines, and safety procedures. These protocols are the single source of truth for how a trial must be conducted.
 
@@ -337,7 +363,7 @@ Full design notes in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ---
 
-## Layout
+## Project structure
 
 ```
 vera/                   core library
@@ -358,48 +384,63 @@ wsgi.py                 gunicorn entry point
 render.yaml             Render blueprint
 ```
 
+---
+
 ## License
 
-This project is licensed under the [phiUture Proprietary License](LICENSE).
-See the LICENSE file for full license text.
+**Proprietary.** Copyright © 2026 Bitan Paul, phiUture. All Rights Reserved.
 
+No part of VERA may be used, copied, modified or distributed without prior written
+permission — see [`LICENSE`](LICENSE).
 
+---
 
-## About phiUture
+## About phiUture Tech
 
+**VERA** is built by **[phiUture Tech](https://phiuture.com/tech)** — *Thoughtfully Engineered. Crafted for You.*
 
-Welcome to phiUture — Beautiful Technology. Centered Around You. Shaping Tomorrow.
+phiUture Tech is the software half of **[phiUture](https://phiuture.com)** — *Technically Creative.* —
+an independent studio with one vision: *Shaping the future for you through technology and creativity.*
+The name is the philosophy: **φ**, the golden ratio, for craft and balance, and **U** for you — the
+person every product is built around. *Thoughtfully Engineered.* means every product is designed
+before it is built; *Crafted for You.* means the engineering exists so the experience feels effortless.
 
-Inspired by the Golden Ratio (φ), our name represents beautiful, intelligent engineering, while the "U" stands for You—placing people at the center of every solution we build.
+phiUture Tech builds AI & data products, agentic systems, automation, applications, research and
+games. Its sister half, **[phiUture Studios](https://phiuture.com/studios)** — *Entertainment First.
+Technology Follows.* — makes original music and film.
 
-phiUture is an AI-first software company creating intelligent products, automation systems, and modern digital experiences. This channel documents the journey of building practical AI solutions, from concept to deployment.
+<div align="center">
 
-```text
-Here you'll find:
-• AI applications and product demos
-• AI agents and automation workflows
-• Web and mobile app showcases
-• Machine Learning and Data Engineering projects
-• Product launches and development insights
-• UI/UX and software engineering content
-• Tutorials, experiments, and future innovations
-```
+[![Explore phiUture Tech](https://img.shields.io/badge/Explore-phiUture_Tech-000000?style=for-the-badge)](https://phiuture.com/tech)
+[![YouTube @phiuture](https://img.shields.io/badge/YouTube-%40phiuture-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@phiuture)
+[![GitHub thebitanpaul](https://img.shields.io/badge/GitHub-thebitanpaul-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/thebitanpaul)
+[![Business email](https://img.shields.io/badge/Business-thephiuture%40gmail.com-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:thephiuture@gmail.com)
+
+</div>
+
+<details>
+<summary><b>Every phiUture link</b></summary>
+
+<br/>
 
 | Personal | Business | Artist |
 |----------|----------|--------|
 | [![GitHub](https://img.shields.io/badge/GitHub-thebitanpaul-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/thebitanpaul) | [![Website](https://img.shields.io/badge/Website-phiUture-000000?style=for-the-badge&logo=googlechrome&logoColor=white)](https://phiuture.com) | [![YouTube](https://img.shields.io/badge/YouTube-thebitanpaul-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@thebitanpaul) |
 | [![LinkedIn](https://img.shields.io/badge/LinkedIn-thebitanpaul-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/thebitanpaul) | [![YouTube](https://img.shields.io/badge/YouTube-phiUture-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@phiuture) | [![Spotify](https://img.shields.io/badge/Spotify-1DB954?style=for-the-badge&logo=spotify&logoColor=white)](https://open.spotify.com/artist/6ghDcCBlKzJIgm3e586jpV) |
-| [![Instagram](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://instagram.com/thebitanpaul) | [![Google Play](https://img.shields.io/badge/Google_Play-Developer-34A853?style=for-the-badge&logo=googleplay&logoColor=white)](https://play.google.com/store/apps/dev?id=6358474525178045834&hl=en) | [![YouTube Music](https://img.shields.io/badge/YouTube_Music-FF0000?style=for-the-badge&logo=youtubemusic&logoColor=white)](https://music.youtube.com/playlist?list=OLAK5uy_km3cjEB2zl59Etcgv9UBKWw800O9G3NdE) |
+| [![Instagram](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://instagram.com/thebitanpaul) [![Threads](https://img.shields.io/badge/Threads-000000?style=for-the-badge&logo=threads&logoColor=white)](https://www.threads.com/@thebitanpaul) | [![Google Play](https://img.shields.io/badge/Google_Play-Developer-34A853?style=for-the-badge&logo=googleplay&logoColor=white)](https://play.google.com/store/apps/dev?id=6358474525178045834&hl=en) | [![YouTube Music](https://img.shields.io/badge/YouTube_Music-FF0000?style=for-the-badge&logo=youtubemusic&logoColor=white)](https://music.youtube.com/playlist?list=OLAK5uy_km3cjEB2zl59Etcgv9UBKWw800O9G3NdE) |
 | [![Facebook](https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white)](https://facebook.com/thebitanpaul) | [![Email](https://img.shields.io/badge/Business_Email-thephiuture%40gmail.com-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:thephiuture@gmail.com) | [![Amazon Music](https://img.shields.io/badge/Amazon_Music-46C3D0?style=for-the-badge&logo=amazonmusic&logoColor=white)](https://music.amazon.com/albums/B0G52QMYDC) |
 | [![X](https://img.shields.io/badge/X-000000?style=for-the-badge&logo=x&logoColor=white)](https://x.com/thebitanpaul_) |  | [![Apple Music](https://img.shields.io/badge/Apple_Music-FA243C?style=for-the-badge&logo=applemusic&logoColor=white)](https://music.apple.com/us/artist/thebitanpaul/1858534880) |
 | [![Snapchat](https://img.shields.io/badge/Snapchat-FFFC00?style=for-the-badge&logo=snapchat&logoColor=000000)](https://snapchat.com/t/UgO0Iywr) |  | [![JioSaavn](https://img.shields.io/badge/JioSaavn-2BC5B4?style=for-the-badge&logo=jiosaavn&logoColor=white)](https://www.jiosaavn.com/artist/thebitanpaul-songs/zuo0NgC65gQ_) |
 | [![Email](https://img.shields.io/badge/Personal_Email-thebitanpaul%40gmail.com-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:thebitanpaul@gmail.com) |  |  |
 
+</details>
 
----
+<br/>
 
 <div align="center">
 
-**2026 · © phiUture · All Rights Reserved**
+**phiUture Tech** · *Thoughtfully Engineered. Crafted for You.*
+
+<sub>© 2026 phiUture · All Rights Reserved</sub>
 
 </div>
